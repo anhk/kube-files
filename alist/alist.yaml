@@ -1,0 +1,79 @@
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: alist-sc
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer # 绑定模式为等待消费者,即当Pod分配到节点后,进行与PV的绑定
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: alist-pv
+spec:
+  storageClassName: alist-sc
+  accessModes: ["ReadWriteOnce"]
+  capacity:
+    storage: 10Gi
+  hostPath:
+    path: /Users/anhongkui/kube/alist
+  persistentVolumeReclaimPolicy: Retain
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: alist
+spec:
+  type: NodePort
+  ports:
+    - port: 5244
+      targetPort: 5244
+  selector:
+    app: alist
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: alist
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alist
+  serviceName: alist
+  template:
+    metadata:
+      labels:
+        app: alist
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: alist
+          image: xhofe/alist:latest
+          imagePullPolicy: Always
+          securityContext:
+            privileged: true
+          env:
+            - name: PUID
+              value: "0"
+            - name: PGID
+              value: "0"
+            - name: UMASK
+              value: "022"
+            - name: ALIST_PORT
+              value: "5244"
+          volumeMounts:
+            - name: alist-data
+              mountPath: /opt/alist/data
+  volumeClaimTemplates:
+    - metadata:
+        name: alist-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: alist-sc
+        resources:
+          requests:
+            storage: 10Gi
