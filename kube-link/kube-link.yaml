@@ -32,10 +32,10 @@ spec:
         resources:
           limits:
             cpu: 200m
-            memory: 256M
+            memory: 512M
           requests:
             cpu: 200m
-            memory: 256M
+            memory: 512M
         volumeMounts:
         - name: kube-link-pinpath
           mountPath: /sys/fs/bpf
