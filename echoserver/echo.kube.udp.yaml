@@ -24,6 +24,7 @@ kind: Service
 metadata:
   name: udp-echoserver
 spec:
+  ipFamilyPolicy: PreferDualStack
   ports:
     - port: 33333
       targetPort: 33333
