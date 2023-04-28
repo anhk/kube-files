@@ -13,11 +13,11 @@ spec:
         app: udp-echoserver
     spec:
       containers:
-      - image: samos123/udp-echo-server
+      - image: ir0cn/udpecho
         imagePullPolicy: IfNotPresent
         name: udp-echoserver
         ports:
-        - containerPort: 3333
+        - containerPort: 33333
 ---
 apiVersion: v1
 kind: Service
@@ -25,8 +25,8 @@ metadata:
   name: udp-echoserver
 spec:
   ports:
-    - port: 3333
-      targetPort: 3333
+    - port: 33333
+      targetPort: 33333
       protocol: UDP
   type: ClusterIP
   selector:
