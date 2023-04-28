@@ -13,7 +13,7 @@ spec:
         app: udp-echoserver
     spec:
       containers:
-      - image: ir0cn/udpecho
+      - image: ir0cn/udpecho:arm64
         imagePullPolicy: IfNotPresent
         name: udp-echoserver
         ports:
