@@ -1,0 +1,75 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: init-nginx-scripts
+data:
+  init.sh: |-
+    #!/bin/bash
+    set -e -x
+    mkdir -p /usr/share/nginx/html/
+    dd if=/dev/zero of=/usr/share/nginx/html/20.html bs=20 count=1
+    dd if=/dev/zero of=/usr/share/nginx/html/300.html bs=300 count=1
+    dd if=/dev/zero of=/usr/share/nginx/html/1024.html bs=1024 count=1
+    dd if=/dev/zero of=/usr/share/nginx/html/10240.html bs=1024 count=10
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: nginx
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: nginx
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: nginx
+        image: nginx:1.25.0-alpine
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: 1
+            memory: 200Mi
+        volumeMounts:
+          - name: nginx-data
+            mountPath: /usr/share/nginx/html
+      initContainers:
+      - name: init-nginx
+        image: busybox
+        command: 
+          - sh 
+          - /var/run/scripts/init.sh
+        volumeMounts:
+          - name: nginx-data
+            mountPath: /usr/share/nginx/html
+          - name: init-scripts
+            mountPath: /var/run/scripts
+      volumes:
+      - name: nginx-data
+        emptyDir: {}
+      - name: init-scripts
+        configMap:
+          name: init-nginx-scripts
