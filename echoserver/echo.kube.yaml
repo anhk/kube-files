@@ -13,7 +13,7 @@ spec:
         app: echoserver
     spec:
       containers:
-      - image: ir0cn/httpecho:arm64
+      - image: ir0cn/httpecho:latest
         imagePullPolicy: IfNotPresent
         name: echoserver
         ports:
