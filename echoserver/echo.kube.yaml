@@ -13,7 +13,7 @@ spec:
         app: echoserver
     spec:
       containers:
-      - image: ealen/echo-server:latest
+      - image: ir0cn/httpecho:latest
         imagePullPolicy: IfNotPresent
         name: echoserver
         ports:
@@ -27,6 +27,7 @@ kind: Service
 metadata:
   name: echoserver
 spec:
+  ipFamilyPolicy: PreferDualStack
   ports:
     - port: 80
       targetPort: 80
@@ -34,6 +35,7 @@ spec:
   type: ClusterIP
   selector:
     app: echoserver
+
 # ---
 # apiVersion: networking.k8s.io/v1
 # kind: Ingress
