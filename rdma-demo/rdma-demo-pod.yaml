@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: rdma-demo-1
+spec:
+  restartPolicy: OnFailure
+  containers:
+  - image: ir0cn/rdma-demo:x86
+    imagePullPolicy: IfNotPresent
+    name: rdma-demo
+    securityContext:
+      capabilities:
+        add: [ "IPC_LOCK" ]
+    resources:
+      limits:
+        rdma/hca_shared_devices: 1
+    command: [ "/bin/bash", "-c", "--", "trap : TERM INT; sleep infinity & wait" ]
