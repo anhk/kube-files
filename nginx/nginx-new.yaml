@@ -79,7 +79,7 @@ spec:
           requests:
             cpu: "2"
             memory: 4Gi
-      nodeName: k8s-node01
+      #nodeName: k8s-node01
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       volumes:
