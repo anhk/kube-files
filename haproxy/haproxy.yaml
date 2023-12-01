@@ -1,0 +1,105 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: haproxy-cm-anhk
+data:
+  haproxy.conf: |
+    global
+      log 127.0.0.1 local0 info
+      user root
+      group root
+    
+    defaults
+      mode http
+      option httplog
+      option dontlognull
+      option forwardfor
+      option httpclose
+
+      timeout connect 5000
+      timeout client 50000
+      timeout server 50000
+
+    frontend http-in
+      bind *:8080
+      mode http
+      option httplog
+      log global
+      default_backend htmpool
+
+    frontend tcp-in
+      bind *:8081
+      mode tcp
+      option tcplog
+      log global
+      default_backend htmpool2
+
+    backend htmpool
+      balance leastconn
+      server web1 192.168.64.53:80 check send-proxy
+
+    backend htmpool2
+      balance leastconn
+      server web1 192.168.64.53:80 check send-proxy-v2
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: haproxy-anhk
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: haproxy-anhk
+  template:
+    metadata:
+      labels:
+        app: haproxy-anhk
+    spec:
+      containers:
+      - image: haproxy:lts-alpine
+        imagePullPolicy: IfNotPresent
+        name: haproxy
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        - containerPort: 8081
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /usr/local/etc/haproxy/haproxy.cfg
+          name: config-volume
+          subPath: haproxy.conf
+        resources:
+          limits:
+            cpu: "16"
+            memory: 32Gi
+          requests:
+            cpu: "2"
+            memory: 4Gi
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      volumes:
+      - configMap:
+          defaultMode: 420
+          name: haproxy-cm-anhk
+        name: config-volume
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: haproxy
+spec:
+  ports:
+  - port: 80
+    name: http
+    protocol: TCP
+    targetPort: 8080
+  - port: 81
+    name: tcp
+    protocol: TCP
+    targetPort: 8081
+  selector:
+    app: haproxy-anhk
+  type: NodePort
