@@ -33,7 +33,7 @@ spec:
     - port: 80
       targetPort: 80
       protocol: TCP
-  clusterIP: None
+  type: NodePort
   selector:
     app: echoserver-sts
 
