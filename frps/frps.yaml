@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frps
+  template:
+    metadata:
+      labels:
+        app: frps
+    spec:
+      hostNetwork: true
+      containers:
+      - image: fatedier/frps:v0.53.2
+        imagePullPolicy: IfNotPresent
+        name: frps
+        command: ["/usr/bin/frps"]
+        args: 
+        - "--token"
+        - "<mytoken>"
+        - "--vhost_http_port"
+        - "8080"
+        - "--vhost_https_port"
+        - "8443"
+        - "--subdomain_host"
+        - "xxfe.com"
