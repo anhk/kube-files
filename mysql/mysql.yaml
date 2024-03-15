@@ -1,0 +1,53 @@
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: mysql
+spec:
+  type: NodePort
+  ports:
+    - port: 3306
+      targetPort: 3306
+  selector:
+    app: mysql
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+  labels:
+    app: mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: mysql
+        image: ir0cn/mysql
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+          - name: mysql-data
+            mountPath: /var/lib/mysql
+        env:
+          - name: MYSQL_ROOT_PASSWORD
+            value: "vgpu"
+          - name: MYSQL_DATABASE
+            value: "vgpu"
+          - name: MYSQL_USER
+            value: "vgpu"
+          - name: MYSQL_PASSWORD
+            value: "vgpu"
+      volumes:
+      - name: mysql-data
+        emptyDir: {}

@@ -1,0 +1,49 @@
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: mongo
+spec:
+  type: NodePort
+  ports:
+    - port: 27017
+      targetPort: 27017
+  selector:
+    app: mongo
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo
+  labels:
+    app: mongo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo
+  template:
+    metadata:
+      labels:
+        app: mongo
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: mongo
+        image: mongo
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 27017
+        volumeMounts:
+          - name: mongo-data
+            mountPath: /var/lib/mongo
+        env:
+          - name: MONGO_INITDB_ROOT_USERNAME
+            value: "vgpu"
+          - name: MONGO_INITDB_ROOT_PASSWORD
+            value: "vgpu"
+      volumes:
+      - name: mongo-data
+        emptyDir: {}
