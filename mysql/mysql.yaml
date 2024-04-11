@@ -41,13 +41,13 @@ spec:
             mountPath: /var/lib/mysql
         env:
           - name: MYSQL_ROOT_PASSWORD
-            value: "vgpu"
+            value: "chogori"
           - name: MYSQL_DATABASE
-            value: "vgpu"
+            value: "chogori"
           - name: MYSQL_USER
-            value: "vgpu"
+            value: "chogori"
           - name: MYSQL_PASSWORD
-            value: "vgpu"
+            value: "chogori"
       volumes:
       - name: mysql-data
         emptyDir: {}
