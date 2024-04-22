@@ -4,6 +4,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: redis
+  namespace: chogori
 spec:
   type: NodePort
   ports:
@@ -17,6 +18,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: redis
+  namespace: chogori
   labels:
     app: redis
 spec:
