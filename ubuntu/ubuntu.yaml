@@ -1,0 +1,49 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ubuntu
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ubuntu
+  template:
+    metadata:
+      labels:
+        app: ubuntu
+    spec:
+      containers:
+      - image: ir0cn/ubuntu
+        imagePullPolicy: IfNotPresent
+        name: ubuntu
+        ports:
+        - containerPort: 22
+          hostPort: 22
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /root/
+          name: rootdir
+      #nodeName: k8s-node01
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      volumes:
+      - name: rootdir
+        hostPath:
+          path: /Users/anhongkui/ubuntu
+          type: DirectoryOrCreate
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ubuntu
+spec:
+  ports:
+  - port: 22
+    protocol: TCP
+    targetPort: 22
+  selector:
+    app: ubuntu
+  type: NodePort
+
