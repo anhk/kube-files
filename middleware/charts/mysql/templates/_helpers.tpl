@@ -29,8 +29,12 @@
 {{- define "mysql.tpl" -}}
         image: mysql:5.7
         env:
-        - name: MYSQL_ALLOW_EMPTY_PASSWORD
-          value: "1"
+        - name: MYSQL_ROOT_PASSWORD
+          value: {{ .Values.rootPassword }}
+        - name: MYSQL_USER
+          value: {{ .Values.username }}
+        - name: MYSQL_PASSWORD
+          value: {{ .Values.password }}
         ports:
         - name: mysql
           containerPort: 3306

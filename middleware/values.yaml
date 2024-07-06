@@ -1,9 +1,10 @@
 mysql:
   image: mysql:5.7
   xtrabackupImage: gcr.io/google-samples/xtrabackup:1.0
-  slaveCount: 0
+  slaveCount: 1
   username: chogori
-  password: 123456
+  password: jwaFQGqcGd5rmf7a
+  rootPassword: jwaFQGqcGd5rmf7a
 
 redis:
   image: hub.jdcloud.com/chogori/redis:5.0.14
