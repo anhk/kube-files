@@ -13,4 +13,5 @@ redis:
 global:
   storageSize: 10Gi
   storageClassName: csi-hostpath-fast
-  
+  nodeSelector:
+  antiAffinity: false

@@ -15,6 +15,8 @@ spec:
         app: mysql
         role: master
     spec:
+      {{- include "podAntiAffinity.tpl" . }}
+      {{- include "nodeSelector.tpl" . }}
       initContainers:
       - name: init-mysql
         {{ include "initmysql.tpl" . }}
