@@ -81,6 +81,9 @@
             - key: init.sh
               path: init.sh
               mode: 0755
+            - key: clone.sh
+              path: clone.sh
+              mode: 0755
             - key: backup.sh
               path: backup.sh
               mode: 0755
