@@ -1,105 +1,22 @@
----
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: redis-cluster
+  name: redis
 spec:
-  serviceName: redis-cluster
-  replicas: {{.Values.replicas }}
   selector:
     matchLabels:
-      app: redis-cluster # has to match .spec.template.metadata.labels
+      app: redis
+  serviceName: redis-headless
+  replicas: 1
   template:
     metadata:
       labels:
-        app: redis-cluster
+        app: redis
     spec:
-      {{- if eq .Values.global.antiAffinity true }}
-      affinity:  # Ensure that each Redis instance is provisioned on a different k8s node
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                  - key: "app"
-                    operator: In
-                    values:
-                      - redis-cluster
-              topologyKey: "kubernetes.io/hostname"
-      {{- end }}
-      terminationGracePeriodSeconds: 10
+      {{- include "podAntiAffinity.tpl" . }}
+      {{- include "nodeSelector.tpl" . }}
       containers:
-      - name: redis-cluster
-        image: {{.Values.image}}
-        ports:
-        - containerPort: 6379
-          name: client
-        - containerPort: 16379
-          name: gossip
-        command: [ "bash", "-c", "/conf/bootstrap-pod.sh"]
-        # Ensure that Redis is online before initializing the next node.
-        # TODO: Test that the cluster node is init'd properly.
-        securityContext:
-            capabilities:
-              add:
-                - IPC_LOCK
-        env:
-        - name: POD_NAMESPACE
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.namespace
-        - name: NODE_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: spec.nodeName
-        - name: NUM_SHARDS
-          value: "1"
-        volumeMounts:
-        - name: conf
-          mountPath: /conf
-          readOnly: false
-        - name: podinfo
-          mountPath: /etc/podinfo
-          readOnly: false
-      # initContainers:
-      #   # Wait for the redis-cluster service to exist. We need it to resolve the hostnames of our nodes
-      # - name: init-redis-cluster
-      #   image: busybox:1.28
-      #   command: ['sh', '-c', "until nslookup redis-cluster.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for redis-cluster; sleep 2; done"]
-      volumes:
-      # Insert our pre-baked Redis configuration file into /conf/redis.conf
-      - name: conf
-        configMap:
-          name: redis-cluster-config
-          items: 
-          - key: redis.conf
-            path: redis.conf
-          - key: bootstrap-pod.sh  # TODO: Move this or extract it into its own Docker image
-            path: bootstrap-pod.sh
-            mode: 0755
-      # The init container will use this info to find cluster peers
-      - name: podinfo
-        downwardAPI:
-          items:
-            - path: "labels"
-              fieldRef:
-                fieldPath: metadata.labels
-            - path: "annotations"
-              fieldRef:
-                fieldPath: metadata.annotations
-            - path: "pod_name"
-              fieldRef:
-                fieldPath: metadata.name
-            - path: "pod_namespace"
-              fieldRef:
-                fieldPath: metadata.namespace
-  volumeClaimTemplates:
-  - metadata:
-      name: datadir
-    spec:
-      accessModes: [ "ReadWriteOnce" ]
-      resources:
-        requests:
-          storage: 10Gi
-      {{- with .Values.global.storageClassName }}
-      storageClassName: {{.}}
-      {{- end }}
+        - name: redis
+        {{ include "redis.tpl" . }}
+      {{ include "allvulumes.tpl" . }}
+  {{ include "pvc.tpl" .}}
