@@ -1,6 +1,6 @@
 
 {{- define "initmysql.tpl" -}}
-        image: mysql:5.7
+        image: {{.Values.image}}
         command: ["bash", "-c", "/init.sh"]
         volumeMounts:
         - name: conf
@@ -13,7 +13,7 @@
 {{- end -}}
 
 {{- define "clonemysql.tpl" -}}
-        image: gcr.io/google-samples/xtrabackup:1.0
+        image: {{.Values.xtrabackupImage}}
         command: ["bash", "-c", "/clone.sh"]
         volumeMounts:
         - name: data
@@ -27,7 +27,7 @@
 {{- end -}}
 
 {{- define "mysql.tpl" -}}
-        image: mysql:5.7
+        image: {{.Values.image}}
         env:
         - name: MYSQL_ROOT_PASSWORD
           value: {{ .Values.rootPassword }}
@@ -51,7 +51,7 @@
 {{- end -}}
 
 {{- define "xtrabackup.tpl" -}}
-        image: gcr.io/google-samples/xtrabackup:1.0
+        image: {{.Values.xtrabackupImage}}
         ports:
         - name: xtrabackup
           containerPort: 3307
