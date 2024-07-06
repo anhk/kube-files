@@ -1,5 +1,5 @@
 mysql:
-  image: mysql:5.7
+  image: hub.jdcloud.com/chogori/mysql:5.7.22
   xtrabackupImage: gcr.io/google-samples/xtrabackup:1.0
   slaveCount: 1
   username: chogori
