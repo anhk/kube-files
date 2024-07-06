@@ -7,16 +7,51 @@ spec:
     matchLabels:
       app: redis
   serviceName: redis-headless
-  replicas: 1
+  replicas: {{.Values.replicas}}
   template:
     metadata:
       labels:
         app: redis
     spec:
-      {{- include "podAntiAffinity.tpl" . }}
-      {{- include "nodeSelector.tpl" . }}
+    {{- if eq .Values.global.antiAffinity true }}
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+            - key: app
+              operator: In
+              values:
+              - redis
+          topologyKey: "kubernetes.io/hostname"
+    {{- end }}
+    {{- with .Values.global.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+    {{- end  }}
       containers:
-        - name: redis
-        {{ include "redis.tpl" . }}
-      {{ include "allvulumes.tpl" . }}
-  {{ include "pvc.tpl" .}}
+      - name: redis
+        image: {{.Values.image}}
+        command: ["bash", "-c", "/init.sh"]
+        volumeMounts:
+        - name: redis-scripts
+          mountPath: /init.sh
+          subPath: init.sh
+      volumes:
+      - name: redis-scripts
+        configMap:
+          name: redis-scripts
+          items:
+            - key: init.sh
+              path: init.sh
+              mode: 0755
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: {{.Values.global.storageSize}}
+      {{- with .Values.global.storageClassName }}
+      storageClassName: {{.}}
+      {{- end }}

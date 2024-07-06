@@ -7,15 +7,20 @@ data:
   init.sh: |-
     set -ex
 
-    {{if gt .Values.replicas 0 }}
-    [[ `hostname` =~ -([0-9]+)$ ]] || exit 1
-    PET_ORDINAL=${BASH_REMATCH[1]}
-    if [ "$PET_ORDINAL" = "0" ]; then
-      PET_ORDINAL={{.Values.replicas}}
-    fi
-    slaveOf=redis-$(($PET_ORDINAL-1)).redis-headless
-    redis-server /conf/redis.conf --slaveof=$slaveOf:6379 --replicaOf=$slaveOf:6379 --requirepass {{.Values.password}}
-
-    {{else}}
-    redis-server /conf/redis.conf --requirepass {{.Values.password}}
-    {{end}}
+    {{- if eq (int .Values.replicas) 1 }}
+      redis-server --requirepass {{.Values.password}}
+    {{- else }}
+      [[ `hostname` =~ -([0-9]+)$ ]] || exit 1
+      PET_ORDINAL=${BASH_REMATCH[1]}
+      if [ "$PET_ORDINAL" = "0" ]; then
+        PET_ORDINAL={{.Values.replicas}}
+        
+        redis-server --requirepass {{.Values.password}}
+        exit 0
+      fi
+      echo "protected-mode no" >> /etc/redis.conf
+      echo "masterauth {{.Values.password}}" >> /etc/redis.conf
+      echo "slaveof redis-$(($PET_ORDINAL-1)).redis-headless 6379" >> /etc/redis.conf
+      echo "replicaof redis-$(($PET_ORDINAL-1)).redis-headless 6379" >> /etc/redis.conf
+      redis-server /etc/redis.conf --requirepass {{.Values.password}}
+    {{- end }}
