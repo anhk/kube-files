@@ -1,7 +1,7 @@
 mysql:
   image: hub.jdcloud.com/chogori/mysql:5.7.22
   xtrabackupImage: gcr.io/google-samples/xtrabackup:1.0
-  slaveCount: 1
+  slaveReplicas: 1      # 从库的数量
   username: chogori
   password: jwaFQGqcGd5rmf7a
   rootPassword: jwaFQGqcGd5rmf7a

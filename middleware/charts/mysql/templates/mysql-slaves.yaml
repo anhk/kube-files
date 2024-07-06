@@ -8,7 +8,7 @@ spec:
       app: mysql
       role: slave
   serviceName: mysql-headless
-  replicas: {{.Values.slaveCount }}
+  replicas: {{.Values.slaveReplicas }}
   template:
     metadata:
       labels:
