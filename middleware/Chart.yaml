@@ -1,0 +1,12 @@
+apiVersion: v2
+version: 1.0.0
+type: application
+dependencies:
+- condition: mysql.enable
+  name: mysql
+  repository: file://charts/mysql/
+- condition: redis.enable
+  name: redis
+  repository: file://charts/redis/
+appVersion: "1.16.0"
+name: middleware

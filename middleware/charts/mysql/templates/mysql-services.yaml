@@ -1,0 +1,40 @@
+---
+# 主节点的Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+spec:
+  type: ClusterIP
+  ports:
+  - name: mysql
+    port: 3306
+  selector:
+    app: mysql
+    role: master
+---
+# Headless Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-headless
+spec:
+  clusterIP: None
+  ports:
+  - name: mysql
+    port: 3306
+  selector:
+    app: mysql
+---
+# 从节点的Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-slave
+spec:
+  ports:
+  - name: mysql
+    port: 3306
+  selector:
+    app: mysql
+    role: slave
