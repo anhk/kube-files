@@ -16,9 +16,8 @@ data:
     # Other cluster members need to be able to connect
     protected-mode no
   bootstrap-pod.sh: |+
-    #!/bin/sh
     set -ex
-
+    
     # Find which member of the Stateful Set this pod is running
     # e.g. "redis-cluster-0" -> "0"
     [[ `hostname` =~ -([0-9]+)$ ]] || exit 1

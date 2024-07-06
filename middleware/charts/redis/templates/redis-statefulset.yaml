@@ -35,7 +35,7 @@ spec:
           name: client
         - containerPort: 16379
           name: gossip
-        command: [ "sh", "-c", "/conf/bootstrap-pod.sh"]
+        command: [ "bash", "-c", "/conf/bootstrap-pod.sh"]
         # Ensure that Redis is online before initializing the next node.
         # TODO: Test that the cluster node is init'd properly.
         securityContext:
@@ -60,11 +60,11 @@ spec:
         - name: podinfo
           mountPath: /etc/podinfo
           readOnly: false
-      initContainers:
-        # Wait for the redis-cluster service to exist. We need it to resolve the hostnames of our nodes
-      - name: init-redis-cluster
-        image: busybox:1.28
-        command: ['sh', '-c', "until nslookup redis-cluster.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for redis-cluster; sleep 2; done"]
+      # initContainers:
+      #   # Wait for the redis-cluster service to exist. We need it to resolve the hostnames of our nodes
+      # - name: init-redis-cluster
+      #   image: busybox:1.28
+      #   command: ['sh', '-c', "until nslookup redis-cluster.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for redis-cluster; sleep 2; done"]
       volumes:
       # Insert our pre-baked Redis configuration file into /conf/redis.conf
       - name: conf
@@ -75,6 +75,7 @@ spec:
             path: redis.conf
           - key: bootstrap-pod.sh  # TODO: Move this or extract it into its own Docker image
             path: bootstrap-pod.sh
+            mode: 0755
       # The init container will use this info to find cluster peers
       - name: podinfo
         downwardAPI:
