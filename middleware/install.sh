@@ -5,4 +5,5 @@ if [ $? = 0 ]; then ACTION=upgrade; else ACTION=install; fi
 
 helm $ACTION middleware -n middleware ./ \
   --set global.storageClassName=csi-hostpath-fast \
-  --set mysql.enable=true
+  --set mysql.enabled=true \
+  --set redis.enabled=true

@@ -8,6 +8,7 @@ mysql:
 
 redis:
   image: hub.jdcloud.com/chogori/redis:5.0.14
+  replicas: 3
   password: 123456
 
 global:
@@ -15,3 +16,6 @@ global:
   storageClassName:     # StorageClass的名称，不填则需要有默认SC
   nodeSelector:         # 节点选择器
   antiAffinity: false   # 节点反亲和
+
+tags:
+  middleware: false
