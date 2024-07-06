@@ -102,7 +102,9 @@
       resources:
         requests:
           storage: {{.Values.global.storageSize}}
-      storageClassName: {{.Values.global.storageClassName}}
+      {{- with .Values.global.storageClassName }}
+      storageClassName: {{.}}
+      {{- end }}
 {{- end -}}
 
 {{- define "nodeSelector.tpl"  }}
