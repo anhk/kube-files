@@ -105,14 +105,14 @@
       storageClassName: {{.Values.global.storageClassName}}
 {{- end -}}
 
-{{- define "nodeSelector.tpl" -}}
+{{- define "nodeSelector.tpl"  }}
     {{- with .Values.global.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
-    {{- end -}}
+    {{- end  }}
 {{- end }}
 
-{{- define "podAntiAffinity.tpl" -}}
+{{- define "podAntiAffinity.tpl"  }}
    {{- if eq .Values.global.antiAffinity true }}
       podAntiAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
@@ -123,5 +123,5 @@
               values:
               - mysql
           topologyKey: "kubernetes.io/hostname"
-   {{- end -}}
+   {{- end }}
 {{- end }}
