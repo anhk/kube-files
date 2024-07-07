@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis-slave
+spec:
+  selector:
+    matchLabels:
+      app: redis
+      role: slave
+  serviceName: redis-slave
+  replicas: {{.Values.slaveReplicas}}
+  template:
+    metadata:
+      labels:
+        app: redis
+        role: slave
+    spec:
+    {{- if eq .Values.global.antiAffinity true }}
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - redis
+              topologyKey: "kubernetes.io/hostname"
+    {{- end }}
+    {{- with .Values.global.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+    {{- end  }}
+      containers:
+        - name: redis
+          image: {{.Values.image}}
+          imagePullPolicy: IfNotPresent
+          command:
+            - "redis-server"
+            - "--slaveof"
+            - "redis-master"
+            - "6379"
+            - "--requirepass"
+            - "{{.Values.password}}"
+            - "--masterauth"
+            - "{{.Values.password}}"
+          volumeMounts:
+            - name: data
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: {{.Values.global.storageSize}}
+      {{- with .Values.global.storageClassName }}
+        storageClassName: {{.}}
+      {{- end }}

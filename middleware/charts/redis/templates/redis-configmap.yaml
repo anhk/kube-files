@@ -2,25 +2,11 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: redis-scripts
+  name: redis-sentinel-config
 data:
-  init.sh: |-
-    set -ex
-
-    {{- if eq (int .Values.replicas) 1 }}
-      redis-server --requirepass {{.Values.password}}
-    {{- else }}
-      [[ `hostname` =~ -([0-9]+)$ ]] || exit 1
-      PET_ORDINAL=${BASH_REMATCH[1]}
-      if [ "$PET_ORDINAL" = "0" ]; then
-        PET_ORDINAL={{.Values.replicas}}
-        
-        redis-server --requirepass {{.Values.password}}
-        exit 0
-      fi
-      echo "protected-mode no" >> /etc/redis.conf
-      echo "masterauth {{.Values.password}}" >> /etc/redis.conf
-      echo "slaveof redis-$(($PET_ORDINAL-1)).redis-headless 6379" >> /etc/redis.conf
-      echo "replicaof redis-$(($PET_ORDINAL-1)).redis-headless 6379" >> /etc/redis.conf
-      redis-server /etc/redis.conf --requirepass {{.Values.password}}
-    {{- end }}
+  sentinel.conf: |
+    port 26379
+    sentinel monitor mymaster redis-master 6379 2
+    sentinel down-after-milliseconds mymaster 60000
+    sentinel parallel-syncs mymaster 1
+    sentinel failover-timeout mymaster 180000

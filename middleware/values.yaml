@@ -10,7 +10,7 @@ mysql:
 redis:
   image: redis:5.0.14
   #image: hub.jdcloud.com/chogori/redis:5.0.14
-  replicas: 3
+  slaveReplicas: 2      # 从库的数量
   password: 123456
 
 global:

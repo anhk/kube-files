@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-sentinel
+  labels:
+    app: redis
+    role: sentinel
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: redis
+      role: sentinel
+  template:
+    metadata:
+      labels:
+        app: redis
+        role: sentinel
+    spec:
+      containers:
+        - name: sentinel
+          image: {{.Values.image}}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 26379
+          volumeMounts:
+            - name: redis-sentinel-config
+              mountPath: /mnt
+          command:
+            - bash
+            - -c
+            - |-
+              ls /mnt && cat /mnt/sentinel.conf > /etc/sentinel.conf && \
+              cat /etc/sentinel.conf && \
+              redis-sentinel /etc/sentinel.conf --requirepass {{.Values.password}}
+      volumes:
+        - name: redis-sentinel-config
+          configMap:
+            name: redis-sentinel-config

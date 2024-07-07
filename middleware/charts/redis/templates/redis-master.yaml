@@ -1,17 +1,19 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: redis
+  name: redis-master
 spec:
   selector:
     matchLabels:
       app: redis
-  serviceName: redis-headless
-  replicas: {{.Values.replicas}}
+      role: master
+  serviceName: redis-master
+  replicas: 1
   template:
     metadata:
       labels:
         app: redis
+        role: master
     spec:
     {{- if eq .Values.global.antiAffinity true }}
       affinity:
@@ -32,19 +34,11 @@ spec:
       containers:
       - name: redis
         image: {{.Values.image}}
-        command: ["bash", "-c", "/init.sh"]
+        imagePullPolicy: IfNotPresent
+        command: ["redis-server", "--appendonly", "yes",  "--requirepass", "{{.Values.password}}"]
         volumeMounts:
-        - name: redis-scripts
-          mountPath: /init.sh
-          subPath: init.sh
-      volumes:
-      - name: redis-scripts
-        configMap:
-          name: redis-scripts
-          items:
-            - key: init.sh
-              path: init.sh
-              mode: 0755
+        - name: data
+          mountPath: /data
   volumeClaimTemplates:
   - metadata:
       name: data
