@@ -14,15 +14,16 @@ spec:
         app: redis
     spec:
     {{- if eq .Values.global.antiAffinity true }}
-      podAntiAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-        - labelSelector:
-            matchExpressions:
-            - key: app
-              operator: In
-              values:
-              - redis
-          topologyKey: "kubernetes.io/hostname"
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - redis
+            topologyKey: "kubernetes.io/hostname"
     {{- end }}
     {{- with .Values.global.nodeSelector }}
       nodeSelector:
