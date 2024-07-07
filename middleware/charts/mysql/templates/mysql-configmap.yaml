@@ -54,7 +54,7 @@ data:
     [[ -d /var/lib/mysql/mysql ]] && exit 0
     [[ `hostname` =~ -([0-9]+)$ ]] || exit 1
     ordinal=${BASH_REMATCH[1]}
-    From=$([ $ordinal -eq 0 ] && echo mysql-master-0 || echo mysql-$(($ordinal-1)) )
+    From=$([ $ordinal -eq 0 ] && echo mysql-master-0 || echo mysql-slave-$(($ordinal-1)) )
     ncat --recv-only ${From}.mysql-headless 3307 | xbstream -x -C /var/lib/mysql
     xtrabackup --prepare --target-dir=/var/lib/mysql
   backup.sh: |-
