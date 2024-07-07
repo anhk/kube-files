@@ -1,5 +1,6 @@
 mysql:
-  image: hub.jdcloud.com/chogori/mysql:5.7.22
+  image: mysql:5.7
+  #image: hub.jdcloud.com/chogori/mysql:5.7.22
   xtrabackupImage: gcr.io/google-samples/xtrabackup:1.0
   slaveReplicas: 1      # 从库的数量
   username: chogori
@@ -7,7 +8,8 @@ mysql:
   rootPassword: jwaFQGqcGd5rmf7a
 
 redis:
-  image: hub.jdcloud.com/chogori/redis:5.0.14
+  image: redis:5.0.14
+  #image: hub.jdcloud.com/chogori/redis:5.0.14
   replicas: 3
   password: 123456
 
