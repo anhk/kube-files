@@ -42,7 +42,7 @@ spec:
           command:
             - "redis-server"
             - "--slaveof"
-            - "redis-master"
+            - "redis"
             - "6379"
             - "--requirepass"
             - "{{.Values.password}}"

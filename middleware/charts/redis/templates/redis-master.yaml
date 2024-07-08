@@ -7,7 +7,7 @@ spec:
     matchLabels:
       app: redis
       role: master
-  serviceName: redis-master
+  serviceName: redis
   replicas: 1
   template:
     metadata:
