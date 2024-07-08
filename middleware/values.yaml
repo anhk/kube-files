@@ -1,6 +1,6 @@
 mysql:
-  image: mysql:5.7
-  #image: hub.jdcloud.com/chogori/mysql:5.7.22
+#  image: mysql:5.7
+  image: hub.jdcloud.com/chogori/mysql:5.7.22
   xtrabackupImage: gcr.io/google-samples/xtrabackup:1.0
   slaveReplicas: 2      # 从库的数量
   username: chogori
@@ -8,10 +8,11 @@ mysql:
   rootPassword: jwaFQGqcGd5rmf7a
 
 redis:
-  image: redis:5.0.14
-  #image: hub.jdcloud.com/chogori/redis:5.0.14
+#  image: redis:5.0.14
+  image: hub.jdcloud.com/chogori/redis:5.0.14
   slaveReplicas: 2      # 从库的数量
-  password: 123456
+  password: jwaFQGqcGd5rmf7a
+  sentinel: false       # 是否启用哨兵模式
 
 global:
   storageSize: 10Gi     # PVC的容量
