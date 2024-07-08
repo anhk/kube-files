@@ -19,3 +19,5 @@ global:
   storageClassName:     # StorageClass的名称，不填则需要有默认SC
   nodeSelector: {}      # 节点选择器
   antiAffinity: false   # 节点反亲和
+  imagePullSecrets:
+    - name: jdosnet-hub

@@ -15,6 +15,10 @@ spec:
         app: redis
         role: slave
     spec:
+    {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
     {{- if eq .Values.global.antiAffinity true }}
       affinity:
         podAntiAffinity:
