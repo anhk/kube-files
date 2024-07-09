@@ -14,7 +14,8 @@ data:
     skip_ssl
     sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
     character-set-server=utf8
-    log-bin  # 主节点配置
+    log-bin               # 主节点配置
+    expire_logs_days = 7  # 自动删除binlog
     [client]
     default-character-set = utf8
   replica.cnf: |
