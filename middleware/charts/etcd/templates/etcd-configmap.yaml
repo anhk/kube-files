@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: etcd-scripts
+data:
+  start.sh: |-
+    PEERS=""
+    for i in $(seq 0 $(({{.Values.replicas}} - 1))); do
+      PEERS="${PEERS}${PEERS:+,}etcd-${i}=http://etcd-${i}.etcd-headless:2380"
+    done
+    exec etcd --name ${HOSTNAME} \
+      --listen-peer-urls http://0.0.0.0:2380 \
+      --listen-client-urls http://0.0.0.0:2379 \
+      --advertise-client-urls http://0.0.0.0:2379 \
+      --initial-cluster-token etcd-cluster-1 \
+      --initial-cluster=${PEERS} \
+      --initial-cluster-state new \
+      --data-dir=/etcd-data

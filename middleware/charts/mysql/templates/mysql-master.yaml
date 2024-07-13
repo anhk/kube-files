@@ -118,7 +118,7 @@ spec:
         accessModes: ["ReadWriteOnce"]
         resources:
           requests:
-            storage: {{.Values.global.storageSize}}
-      {{- with .Values.global.storageClassName }}
+            storage: {{.Values.storageSize}}
+      {{- with .Values.storageClassName }}
         storageClassName: {{.}}
       {{- end }}

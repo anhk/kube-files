@@ -12,5 +12,10 @@ dependencies:
   repository: file://charts/redis/
   tags:
     - middleware
+- condition: etcd.enabled
+  name: etcd
+  repository: file://charts/etcd/
+  tags:
+    - middleware
 appVersion: "1.16.0"
 name: middleware

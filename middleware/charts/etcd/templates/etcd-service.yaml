@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: etcd-headless
+spec:
+  clusterIP: None
+  selector:
+    app: etcd
+  ports:
+    - port: 2379
+      name: client
+    - port: 2380
+      name: peer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: etcd
+spec:
+  selector:
+    app: etcd
+  ports:
+    - port: 2379
+      name: client
+    - port: 2380
+      name: peer

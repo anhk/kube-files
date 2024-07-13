@@ -1,21 +1,30 @@
 mysql:
   image: hub.jdcloud.com/chogori/mysql:5.7.22
-  xtrabackupImage: hub.jdcloud.com/chogori/xtrabackup:8.0.35-amd64
-  # xtrabackupImage: hub.jdcloud.com/chogori/xtrabackup:8.0.35-arm64
+  xtrabackupImage: hub.jdcloud.com/chogori/xtrabackup:2.4.29-amd64-2
+  #xtrabackupImage: hub.jdcloud.com/chogori/xtrabackup:2.4.29-arm64-2
   slaveReplicas: 2      # 从库的数量
   username: chogori
   password: jwaFQGqcGd5rmf7a
   rootPassword: jwaFQGqcGd5rmf7a
+  storageSize: 10Gi     # PVC的容量
+  storageClassName:     # StorageClass的名称，不填则需要有默认SC
 
 redis:
   image: hub.jdcloud.com/chogori/redis:5.0.14
   slaveReplicas: 2      # 从库的数量
   password: jwaFQGqcGd5rmf7a
   sentinel: false       # 是否启用哨兵模式
-
-global:
   storageSize: 10Gi     # PVC的容量
   storageClassName:     # StorageClass的名称，不填则需要有默认SC
+
+etcd:
+  image: bitnami/etcd:3.5.14
+  replicas: 3           # 副本数量
+  password: jwaFQGqcGd5rmf7a
+  storageSize: 10Gi     # PVC的容量
+  storageClassName:     # StorageClass的名称，不填则需要有默认SC
+
+global:
   nodeSelector: {}      # 节点选择器
   antiAffinity: false   # 节点反亲和
   imagePullSecrets:
