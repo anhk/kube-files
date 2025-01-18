@@ -45,6 +45,7 @@ spec:
       labels:
         app: nfs-server
     spec:
+      hostNetwork: true
       containers:
       - name: nfs-server
         image: ir0cn/nfs-server
