@@ -28,7 +28,7 @@ metadata:
   namespace: storage
 data:
   exports: |
-    /exports *(rw,sync,no_root_squash)
+    /exports *(rw,sync,no_root_squash,insecure,no_subtree_check,no_all_squash)
 
 ---
 apiVersion: apps/v1
